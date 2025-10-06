@@ -2,14 +2,77 @@
 title: "Quarto Showcase"
 author: "Justin Beresford"
 format: 
-    revealjs:
-        theme: [default, style.scss]
+  revealjs:
+    theme: [default, style.scss]
+    slide-number: true
+    transition: fade
+    incremental: true
+
 ---
 
 ## Quarto
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Quarto enables you to weave together content and code into a finished document. To learn more about Quarto see <https://quarto.org>.
 
-## Slide 2
+## Slidecrafting book
+The contents from this slide deck are written in markdown. The tips and tricks almost all come from <https://slidecrafting-book.com>
 
-[Quarto]{.blue} enables you to weave together [content]{.yellow} and [executable code]{.yellow} into a **finished presentation**. To learn more about [Quarto]{.blue} presentations see <https://quarto.org/docs/presentations/>.
+
+::: {.section-slide .red-bg}
+# Section Title
+A strong section divider slide
+:::
+
+## Regular content again
+
+Clean, off-white background and dark text.
+
++ First key message
++ Second key message with a bit more text
+    + Nested detail one
+    + Nested detail two
++ Third key message
+
+## Another slide
+
+[Inline]{.red} accents work [very easily]{.green} with text styling from a `.scss` file.
+
+Because it's markdown, equations are also easy to include as inline, eg $E = mc^2$ or seperated:
+
+$$ E = mc^2 $$
+
+Like that one. 
+
+::: {.section-slide .green-bg}
+# Now I'm green
+Section titles can change colour by section...
+:::
+
+## Miles per Gallon vs Horsepower
+
+Code chunks can incude plots. 
+
+```{r}
+
+library(ggplot2)
+
+ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point(color = "#e83f35", size = 3, alpha = 0.8) +        # brand red
+  geom_smooth(method = "loess", se = FALSE, color = "#003d4c",  # alt green/teal
+              linewidth = 1.2, span = 0.9) +
+  labs(
+    title = "Fuel efficiency declines with horsepower",
+    subtitle = "mtcars (n = 32)",
+    x = "Horsepower",
+    y = "Miles per gallon"
+  ) +
+  theme_minimal(base_family = "Roboto") +
+  theme(
+    plot.background = element_rect(fill = "#fefefe", color = NA),  # off-white
+    panel.grid.minor = element_blank(),
+    axis.title = element_text(color = "#2f2f2f"),
+    axis.text = element_text(color = "#2f2f2f"),
+    plot.title = element_text(face = "bold", color = "#2f2f2f"),
+    plot.subtitle = element_text(color = "#2f2f2f")
+  )
+```

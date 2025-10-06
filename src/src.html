@@ -6,7 +6,7 @@
 <script src="src_files/libs/quarto-html/tippy.umd.min.js"></script>
 <link href="src_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="src_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="src_files/libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="src_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
   <meta name="author" content="Justin Beresford">
@@ -29,7 +29,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="src_files/libs/revealjs/dist/theme/quarto-9e022e89e2fd7bf4a8019b7bfd9d9c96.css">
+  <link rel="stylesheet" href="src_files/libs/revealjs/dist/theme/quarto-e3e06444d7841adc5bc1dedd14ad6fd2.css">
   <link href="src_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="src_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="src_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -122,7 +122,7 @@
     }
   </style>
 </head>
-<body class="quarto-dark">
+<body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
@@ -140,13 +140,48 @@ Justin Beresford
 </section>
 <section id="quarto" class="slide level2">
 <h2>Quarto</h2>
-<p>Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
+<p>Quarto enables you to weave together content and code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
 </section>
-<section id="slide-2" class="slide level2">
-<h2>Slide 2</h2>
-<p><span class="blue">Quarto</span> enables you to weave together <span class="yellow">content</span> and <span class="yellow">executable code</span> into a <strong>finished presentation</strong>. To learn more about <span class="blue">Quarto</span> presentations see <a href="https://quarto.org/docs/presentations/" class="uri">https://quarto.org/docs/presentations/</a>.</p>
+<section id="slidecrafting-book" class="slide level2">
+<h2>Slidecrafting book</h2>
+<p>The contents from this slide deck are written in markdown. The tips and tricks almost all come from <a href="https://slidecrafting-book.com" class="uri">https://slidecrafting-book.com</a></p>
+</section>
+<section id="section-title" class="title-slide slide level1 section-slide red-bg center">
+<h1>Section Title</h1>
+<p>A strong section divider slide</p>
+</section>
 
+<section id="regular-content-again" class="slide level2">
+<h2>Regular content again</h2>
+<p>Clean, off-white background and dark text.</p>
+<ul>
+<li class="fragment">First key message</li>
+<li class="fragment">Second key message with a bit more text
+<ul>
+<li class="fragment">Nested detail one</li>
+<li class="fragment">Nested detail two</li>
+</ul></li>
+<li class="fragment">Third key message</li>
+</ul>
 </section>
+<section id="another-slide" class="slide level2">
+<h2>Another slide</h2>
+<p><span class="red">Inline</span> accents work <span class="green">very easily</span> with text styling from a <code>.scss</code> file.</p>
+<p>Because it’s markdown, equations are also easy to include as inline, eg <span class="math inline">\(E = mc^2\)</span> or seperated:</p>
+<p><span class="math display">\[ E = mc^2 \]</span></p>
+<p>Like that one.</p>
+</section>
+<section id="now-im-green" class="title-slide slide level1 section-slide green-bg center">
+<h1>Now I’m green</h1>
+<p>Section titles can change colour by section…</p>
+</section>
+
+<section id="miles-per-gallon-vs-horsepower" class="slide level2">
+<h2>Miles per Gallon vs Horsepower</h2>
+<p>Code chunks can incude plots.</p>
+
+
+<img data-src="src_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
@@ -203,7 +238,7 @@ Justin Beresford
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -308,7 +343,7 @@ Justin Beresford
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'fade',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
@@ -362,6 +397,82 @@ Justin Beresford
         ]
       });
     </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
