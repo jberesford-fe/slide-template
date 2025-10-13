@@ -141,10 +141,10 @@ Justin Beresford
 <section id="bias-vs-variance" class="slide level2">
 <h2>Bias vs Variance</h2>
 <p>In an ML context, we talk about a trade-off between bias and variance.</p>
-<p><strong>1. Variance</strong></p>
-<p>Say you pick 100 poeple and estimate a <span class="math inline">\(\hat{\beta}\)</span>, then pick another 100 people and estimate the same <span class="math inline">\(\hat{\beta}\)</span>. Do that 100 times. How much do all those estimates vary?</p>
-<p><strong>2. Bias</strong></p>
-<p>Bias is the same as the econometrics definition: is the mean of those 100 <span class="math inline">\(\hat{\beta}\)</span>’s equal to the “true” <span class="math inline">\(\beta\)</span> in the full population.</p>
+<ol type="1">
+<li class="fragment"><p><strong>What is Variance?</strong>: Say you pick 100 poeple and estimate a <span class="math inline">\(\hat{\beta}\)</span>, then pick another 100 people and estimate the same <span class="math inline">\(\hat{\beta}\)</span>. Do that 100 times. How much do all those estimates vary?</p></li>
+<li class="fragment"><p><strong>What is Bias</strong>: is the mean of those 100 <span class="math inline">\(\hat{\beta}\)</span>’s equal to the “true” <span class="math inline">\(\beta\)</span> in the full population.</p></li>
+</ol>
 </section>
 <section id="bias-vs-variance-1" class="slide level2">
 <h2>Bias vs Variance</h2>
@@ -154,12 +154,12 @@ Justin Beresford
 </div>
 <div class="fragment">
 <p>Regularised regression is a way to <span class="green">reduce variance</span>, but it comes at the cost of <span class="red">increased bias</span>.</p>
-<p>==&gt; Lasso is one type of regularised regression</p>
+<p>=&gt; Lasso is one type of regularised regression</p>
 </div>
 </section>
 <section id="regularised-regression" class="title-slide slide level1 section-slide red-bg center">
 <h1>Regularised regression</h1>
-<p>Lasso</p>
+<p>How does Lasso reduce variance?</p>
 </section>
 
 <section id="lasso-regression-intuition" class="slide level2">
@@ -187,25 +187,19 @@ Justin Beresford
 <h2>Lasso</h2>
 <h4 id="the-lasso-objective-function">The Lasso objective function</h4>
 <p>Lasso adds a penalty term to the OLS objective function:</p>
-<p><span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_\j|\]</span></p>
+<p><span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|\]</span></p>
 <div class="fragment">
 <p>This is saying: find the <span class="math inline">\(\beta\)</span>’s that <span class="red">(i)</span> minimise the RSS, but also <span class="red">(ii)</span> keep the sum of the absolute values of the <span class="math inline">\(\beta\)</span>’s small.</p>
 </div>
-</section>
-<section id="lasso-1" class="slide level2">
-<h2>Lasso</h2>
-<h4 id="the-lasso-objective-function-1">The Lasso objective function</h4>
-<p>Lasso adds a penalty term to the OLS objective function:</p>
-<p><span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|\]</span></p>
-<p><span class="math inline">\(\lambda\)</span> is the penalty parameter. There’s a trade-off between <span class="math inline">\(RSS\)</span> and keeping the <span class="math inline">\(\beta\)</span> small. How much do we care about one vs the other?</p>
 <div class="fragment">
-<p>NB: when <span class="math inline">\(\lambda = 0\)</span>, this is just OLS. When it’s <span class="math inline">\(\infty\)</span>, all the <span class="math inline">\(\beta\)</span>’s are zero.</p>
+<p><span class="math inline">\(\lambda\)</span> is the penalty parameter. There’s a trade-off between <span class="math inline">\(RSS\)</span> and keeping the <span class="math inline">\(\beta\)</span> small. How much do we care about one vs the other? NB: when <span class="math inline">\(\lambda = 0\)</span>, this is just OLS. When it’s <span class="math inline">\(\infty\)</span>, all the <span class="math inline">\(\beta\)</span>’s are zero.</p>
 </div>
 </section>
 <section id="lasso-for-variable-selection" class="slide level2">
 <h2>Lasso for variable selection</h2>
-<p>Because we’re minising the pure sum of <span class="math inline">\(\beta\)</span>’s (as opposed to $^2$ or some other function), Lasso tends to set some <span class="math inline">\(\beta\)</span>’s exactly to zero.</p>
-<p>This gives Lasso a <span class="green">variable selection</span> property: it will only include predictors that improve the model enough to justify their inclusion.</p>
+<p>Note we’re minising the pure sum of <span class="math inline">\(\beta\)</span>’s (as opposed to <span class="math inline">\({\beta}^2\)</span> or some other non-linear function).</p>
+<p>That means the loss function for the penalty term is linear: this has the effect of shrinking unhelpful coeffients all the way down to zero.</p>
+<p>Lasso has a <span class="green">variable selection</span> property: it will only include predictors that improve the model enough to justify their inclusion.</p>
 </section>
 <section id="pros-and-cons-of-lasso" class="title-slide slide level1 section-slide green-bg center">
 <h1>Pros and Cons of Lasso</h1>
@@ -214,38 +208,46 @@ Justin Beresford
 
 <section id="pros-of-lasso" class="slide level2">
 <h2>Pros of Lasso</h2>
-<ul>
+<ol type="1">
 <li class="fragment">Improves out-of-sample prediction accuracy (by reducing variance and preventing overfitting).</li>
 <li class="fragment">Performs variable selection (i.e.&nbsp;sets some <span class="math inline">\(\beta\)</span>’s to zero). Tells you which predictors are most important.</li>
 <li class="fragment">Great for high-dimensional data. Can even when you have more predictors than observations (<span class="math inline">\(p &gt; n\)</span>)</li>
-<li class="fragment">Can handle multi-collinearity (unlike OLS)</li>
-</ul>
+<li class="fragment">Can handle multi-collinearity (unlike OLS).</li>
+</ol>
 </section>
 <section id="cons-of-lasso" class="slide level2">
 <h2>Cons of Lasso</h2>
-<ul>
+<ol type="1">
 <li class="fragment"><span class="red">Introduces bias</span>. You can’t interpret the coefficients like you would in OLS.</li>
-<li class="fragment">Very sensitive to the choice of <span class="math inline">\(\lambda\)</span>.</li>
+<li class="fragment">Very sensitive to the <span class="red">choice of <span class="math inline">\(\lambda\)</span></span>.</li>
 <li class="fragment">If predictors are highly correlated, Lasso might arbitrarily select one and ignore the others</li>
 <li class="fragment">Unlike OLS, it doesn’t provide confidence intervals or p-values. Although work-arounds exist.</li>
-</ul>
+</ol>
 </section>
-<section id="regularised-regression-1" class="title-slide slide level1 section-slide red-bg center">
-<h1>Regularised regression</h1>
+<section id="cons-of-lasso-1" class="slide level2">
+<h2>Cons of Lasso</h2>
+<p>A <span class="red">common fix</span> for these is to use Lasso for variable selection, then run an OLS regression with the variables that Lasso kept in. This way you get the p-values and can interpret coefficients as elasticities.</p>
+</section>
+<section id="side-note-on-other-methods" class="title-slide slide level1 section-slide red-bg center">
+<h1>Side note on other methods</h1>
 <p>Ridge and Elastic Net</p>
 </section>
 
 <section id="ridge-regression" class="slide level2">
 <h2>Ridge Regression</h2>
 <p>Ridge regression is in the same family as Lasso, but uses a different penalty term: <span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} \beta_j^2\]</span></p>
-<p>Because this minimises the sum of squared <span class="math inline">\(\beta\)</span>’s, Ridge shrinks coefficients but almost never to zero. The effect of the square is to strongly penalise large coefficients.</p>
-<p>While Lasso says <span class="red">“pick a few strong predictors and drop the rest”</span>, Ridge says <span class="green">“keep all predictors, but don’t rely on any single one too heavily”</span>.</p>
+<p>Because this minimises the sum of squared <span class="math inline">\(\beta\)</span>’s, it penalises large <span class="math inline">\(\beta\)</span>’s much more than small ones. Ridge also shrinks coefficients, but almost never to zero.</p>
+<p>So while Lasso says <span class="red">“pick a few strong predictors and drop the rest”</span>, Ridge says <span class="green">“keep all predictors, but don’t rely on any single one too heavily”</span>.</p>
 </section>
 <section id="elastic-net" class="slide level2">
 <h2>Elastic Net</h2>
 <p>Elastic Net is a hybrid of Lasso and Ridge, combining both penalty terms:</p>
-<p><span class="math display">\[\min_{\beta} RSS + \lambda_1 \sum_{j=1}^{p} |\beta_j| + \lambda_2 \sum_{j=1}^{p} \beta_j^2\]</span></p>
-<p>When <span class="math inline">\(\alpha\)</span> is zero, this is pure Ridge. When <span class="math inline">\(\alpha\)</span> is one, it’s pure Lasso. In between, it’s a mix of both.</p>
+<p><span class="math display">\[
+\min_{\beta} \; RSS
++ \lambda \left( \alpha \sum_{j=1}^{p} |\beta_j|
++ (1 - \alpha) \sum_{j=1}^{p} \beta_j^2 \right)
+\]</span></p>
+<p>When <span class="math inline">\(\alpha = 0\)</span>, this is pure Ridge. When <span class="math inline">\(\alpha = 1\)</span>, it’s pure Lasso. In between, it’s a mix of both.</p>
 <p>Drop the variables that don’t add enough to justify their conclusion <strong>and</strong> of those that remain, don’t rely too strongly on any single one.</p>
 
 </section>

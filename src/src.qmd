@@ -14,13 +14,9 @@ format:
 
 In an ML context, we talk about a trade-off between bias and variance.
 
-**1. Variance**
+1. **What is Variance?**: Say you pick 100 poeple and estimate a $\hat{\beta}$, then pick another 100 people and estimate the same $\hat{\beta}$. Do that 100 times. How much do all those estimates vary?
 
-Say you pick 100 poeple and estimate a $\hat{\beta}$, then pick another 100 people and estimate the same $\hat{\beta}$. Do that 100 times. How much do all those estimates vary?
-
-**2. Bias**
-
-Bias is the same as the econometrics definition: is the mean of those 100 $\hat{\beta}$'s equal to the "true" $\beta$ in the full population. 
+2. **What is Bias**: is the mean of those 100 $\hat{\beta}$'s equal to the "true" $\beta$ in the full population. 
 
 ## Bias vs Variance
 
@@ -38,7 +34,7 @@ Regularised regression is a way to [reduce variance]{.green}, but it comes at th
 
 ::: {.section-slide .red-bg}
 # Regularised regression
-Lasso
+How does Lasso reduce variance?
 :::
 
 ## Lasso Regression (intuition)
@@ -77,32 +73,25 @@ $$ RSS = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 
 Lasso adds a penalty term to the OLS objective function:
 
-$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_\j|$$
-
+$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|$$
 
 ::: {.fragment}
 This is saying: find the $\beta$'s that [(i)]{.red} minimise the RSS, but also [(ii)]{.red} keep the sum of the absolute values of the $\beta$'s small.
 :::
 
-## Lasso 
-
-#### The Lasso objective function
-
-Lasso adds a penalty term to the OLS objective function:
-
-$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|$$
+::: {.fragment}
 
 $\lambda$  is the penalty parameter. There's a trade-off between $RSS$ and keeping the $\beta$  small. How much do we care about one vs the other? 
-
-::: {.fragment}
 NB: when $\lambda = 0$, this is just OLS. When it's $\infty$, all the $\beta$'s are zero.
 :::
 
 ## Lasso for variable selection
 
-Because we're minising the pure sum of $\beta$'s (as opposed to $\beta^2\$ or some other function), Lasso tends to set some $\beta$'s exactly to zero. 
+Note we're minising the pure sum of $\beta$'s (as opposed to ${\beta}^2$ or some other non-linear function).
 
-This gives Lasso a [variable selection]{.green} property: it will only include predictors that improve the model enough to justify their inclusion.
+That means the loss function for the penalty term is linear: this has the effect of shrinking unhelpful coeffients all the way down to zero.
+
+Lasso has a [variable selection]{.green} property: it will only include predictors that improve the model enough to justify their inclusion.
 
 ::: {.section-slide .green-bg}
 # Pros and Cons of Lasso
@@ -110,20 +99,24 @@ This gives Lasso a [variable selection]{.green} property: it will only include p
 
 ## Pros of Lasso
 
-- Improves out-of-sample prediction accuracy (by reducing variance and preventing overfitting).
-- Performs variable selection (i.e. sets some $\beta$'s to zero). Tells you which predictors are most important.
-- Great for high-dimensional data. Can even when you have more predictors than observations ($p > n$)
-- Can handle multi-collinearity (unlike OLS)
+1. Improves out-of-sample prediction accuracy (by reducing variance and preventing overfitting).
+1. Performs variable selection (i.e. sets some $\beta$'s to zero). Tells you which predictors are most important.
+1. Great for high-dimensional data. Can even when you have more predictors than observations ($p > n$)
+1. Can handle multi-collinearity (unlike OLS).
 
 ## Cons of Lasso
 
-- [Introduces bias]{.red}. You can't interpret the coefficients like you would in OLS. 
-- Very sensitive to the choice of $\lambda$.
-- If predictors are highly correlated, Lasso might arbitrarily select one and ignore the others
-- Unlike OLS, it doesn't provide confidence intervals or p-values. Although work-arounds exist. 
+1. [Introduces bias]{.red}. You can't interpret the coefficients like you would in OLS. 
+1. Very sensitive to the [choice of $\lambda$]{.red}.
+1. If predictors are highly correlated, Lasso might arbitrarily select one and ignore the others
+1. Unlike OLS, it doesn't provide confidence intervals or p-values. Although work-arounds exist. 
+
+## Cons of Lasso
+
+A [common fix]{.red} for these is to use Lasso for variable selection, then run an OLS regression with the variables that Lasso kept in. This way you get the p-values and can interpret coefficients as elasticities. 
 
 ::: {.section-slide .red-bg}
-# Regularised regression
+# Side note on other methods
 Ridge and Elastic Net
 :::
 
@@ -132,16 +125,20 @@ Ridge and Elastic Net
 Ridge regression is in the same family as Lasso, but uses a different penalty term:
 $$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} \beta_j^2$$
 
-Because this minimises the sum of squared $\beta$'s, Ridge shrinks coefficients but almost never to zero. The effect of the square is to strongly penalise large coefficients.
+Because this minimises the sum of squared $\beta$'s, it penalises large $\beta$'s much more than small ones. Ridge also shrinks coefficients, but almost never to zero.
 
-While Lasso says ["pick a few strong predictors and drop the rest"]{.red}, Ridge says ["keep all predictors, but don't rely on any single one too heavily"]{.green}.
+So while Lasso says ["pick a few strong predictors and drop the rest"]{.red}, Ridge says ["keep all predictors, but don't rely on any single one too heavily"]{.green}.
 
 ## Elastic Net
 
 Elastic Net is a hybrid of Lasso and Ridge, combining both penalty terms:
 
-$$\min_{\beta} RSS + \lambda_1 \sum_{j=1}^{p} |\beta_j| + \lambda_2 \sum_{j=1}^{p} \beta_j^2$$
+$$
+\min_{\beta} \; RSS 
++ \lambda \left( \alpha \sum_{j=1}^{p} |\beta_j|
++ (1 - \alpha) \sum_{j=1}^{p} \beta_j^2 \right)
+$$
 
-When $\alpha$ is zero, this is pure Ridge. When $\alpha$ is one, it's pure Lasso. In between, it's a mix of both.
+When $\alpha = 0$, this is pure Ridge. When $\alpha = 1$, it's pure Lasso. In between, it's a mix of both.
 
 Drop the variables that don't add enough to justify their conclusion **and** of those that remain, don't rely too strongly on any single one. 
