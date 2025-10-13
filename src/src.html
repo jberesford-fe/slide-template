@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.7.32">
 
   <meta name="author" content="Justin Beresford">
-  <title>Quarto Showcase</title>
+  <title>Lasso Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -29,7 +29,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="src_files/libs/revealjs/dist/theme/quarto-e3e06444d7841adc5bc1dedd14ad6fd2.css">
+  <link rel="stylesheet" href="src_files/libs/revealjs/dist/theme/quarto-66f633755bad9663479cd419bd19d284.css">
   <link href="src_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="src_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="src_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -127,7 +127,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Quarto Showcase</h1>
+  <h1 class="title">Lasso Regression</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -138,50 +138,117 @@ Justin Beresford
 </div>
 
 </section>
-<section id="quarto" class="slide level2">
-<h2>Quarto</h2>
-<p>Quarto enables you to weave together content and code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
+<section id="bias-vs-variance" class="slide level2">
+<h2>Bias vs Variance</h2>
+<p>In an ML context, we talk about a trade-off between bias and variance.</p>
+<p><strong>1. Variance</strong></p>
+<p>Say you pick 100 poeple and estimate a <span class="math inline">\(\hat{\beta}\)</span>, then pick another 100 people and estimate the same <span class="math inline">\(\hat{\beta}\)</span>. Do that 100 times. How much do all those estimates vary?</p>
+<p><strong>2. Bias</strong></p>
+<p>Bias is the same as the econometrics definition: is the mean of those 100 <span class="math inline">\(\hat{\beta}\)</span>’s equal to the “true” <span class="math inline">\(\beta\)</span> in the full population.</p>
 </section>
-<section id="slidecrafting-book" class="slide level2">
-<h2>Slidecrafting book</h2>
-<p>The contents from this slide deck are written in markdown. The tips and tricks almost all come from <a href="https://slidecrafting-book.com" class="uri">https://slidecrafting-book.com</a></p>
+<section id="bias-vs-variance-1" class="slide level2">
+<h2>Bias vs Variance</h2>
+<p>Economists are typically interested in unbiasedness, because they care about ‘elasticities’. <em>“The effect of a unit increase in <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> is <span class="math inline">\(\beta\)</span>%”</em>.</p>
+<div class="fragment">
+<p>Machine Learning Engineers are typically interested in predicting things out-of-sample. They typically care more about low variance (i.e.&nbsp;stable estimates) than low bias.</p>
+</div>
+<div class="fragment">
+<p>Regularised regression is a way to <span class="green">reduce variance</span>, but it comes at the cost of <span class="red">increased bias</span>.</p>
+<p>==&gt; Lasso is one type of regularised regression</p>
+</div>
 </section>
-<section id="section-title" class="title-slide slide level1 section-slide red-bg center">
-<h1>Section Title</h1>
-<p>A strong section divider slide</p>
+<section id="regularised-regression" class="title-slide slide level1 section-slide red-bg center">
+<h1>Regularised regression</h1>
+<p>Lasso</p>
 </section>
 
-<section id="regular-content-again" class="slide level2">
-<h2>Regular content again</h2>
-<p>Clean, off-white background and dark text.</p>
+<section id="lasso-regression-intuition" class="slide level2">
+<h2>Lasso Regression (intuition)</h2>
+<p>Occam’s Razor: “Among competing models that explain the data equally well, prefer the simplest.”</p>
+<p>If you have many (hundreds?) of predictors, use a model that only takes on a subset of them.</p>
+<div class="fragment">
+<p>In sample, adding more predictors always improves fit (R² can only go up as you add <span class="math inline">\(X\)</span>’s). But when predicting out-of-sample, those extra predictors might have made things worse (the “overfitting” problem).</p>
+</div>
+<div class="fragment">
+<p>Lasso regression asks: does adding this predictor improve the model <span class="red">by enough to justify its inclusion?</span></p>
+</div>
+</section>
+<section id="recap-on-ols" class="slide level2">
+<h2>Recap on OLS</h2>
+<h4 id="the-ols-objective-function">The OLS objective function</h4>
+<p>Standard OLS finds the <span class="math inline">\(\beta\)</span>’s that minimise the sum of squared residuals: <span class="math display">\[\min_{\beta} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \]</span></p>
+<p><span class="math display">\[\min_{\beta} \sum_{i=1}^{n} (y_i - X_i \beta)^2\]</span></p>
+<div class="fragment">
+<p>Call this difference between <span class="math inline">\(y_i\)</span> and <span class="math inline">\(\hat{y}_i\)</span> the residual sum of squares <span class="math inline">\(RSS\)</span>.</p>
+<p><span class="math display">\[ RSS = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \]</span></p>
+</div>
+</section>
+<section id="lasso" class="slide level2">
+<h2>Lasso</h2>
+<h4 id="the-lasso-objective-function">The Lasso objective function</h4>
+<p>Lasso adds a penalty term to the OLS objective function:</p>
+<p><span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_\j|\]</span></p>
+<div class="fragment">
+<p>This is saying: find the <span class="math inline">\(\beta\)</span>’s that <span class="red">(i)</span> minimise the RSS, but also <span class="red">(ii)</span> keep the sum of the absolute values of the <span class="math inline">\(\beta\)</span>’s small.</p>
+</div>
+</section>
+<section id="lasso-1" class="slide level2">
+<h2>Lasso</h2>
+<h4 id="the-lasso-objective-function-1">The Lasso objective function</h4>
+<p>Lasso adds a penalty term to the OLS objective function:</p>
+<p><span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|\]</span></p>
+<p><span class="math inline">\(\lambda\)</span> is the penalty parameter. There’s a trade-off between <span class="math inline">\(RSS\)</span> and keeping the <span class="math inline">\(\beta\)</span> small. How much do we care about one vs the other?</p>
+<div class="fragment">
+<p>NB: when <span class="math inline">\(\lambda = 0\)</span>, this is just OLS. When it’s <span class="math inline">\(\infty\)</span>, all the <span class="math inline">\(\beta\)</span>’s are zero.</p>
+</div>
+</section>
+<section id="lasso-for-variable-selection" class="slide level2">
+<h2>Lasso for variable selection</h2>
+<p>Because we’re minising the pure sum of <span class="math inline">\(\beta\)</span>’s (as opposed to $^2$ or some other function), Lasso tends to set some <span class="math inline">\(\beta\)</span>’s exactly to zero.</p>
+<p>This gives Lasso a <span class="green">variable selection</span> property: it will only include predictors that improve the model enough to justify their inclusion.</p>
+</section>
+<section id="pros-and-cons-of-lasso" class="title-slide slide level1 section-slide green-bg center">
+<h1>Pros and Cons of Lasso</h1>
+
+</section>
+
+<section id="pros-of-lasso" class="slide level2">
+<h2>Pros of Lasso</h2>
 <ul>
-<li class="fragment">First key message</li>
-<li class="fragment">Second key message with a bit more text
-<ul>
-<li class="fragment">Nested detail one</li>
-<li class="fragment">Nested detail two</li>
-</ul></li>
-<li class="fragment">Third key message</li>
+<li class="fragment">Improves out-of-sample prediction accuracy (by reducing variance and preventing overfitting).</li>
+<li class="fragment">Performs variable selection (i.e.&nbsp;sets some <span class="math inline">\(\beta\)</span>’s to zero). Tells you which predictors are most important.</li>
+<li class="fragment">Great for high-dimensional data. Can even when you have more predictors than observations (<span class="math inline">\(p &gt; n\)</span>)</li>
+<li class="fragment">Can handle multi-collinearity (unlike OLS)</li>
 </ul>
 </section>
-<section id="another-slide" class="slide level2">
-<h2>Another slide</h2>
-<p><span class="red">Inline</span> accents work <span class="green">very easily</span> with text styling from a <code>.scss</code> file.</p>
-<p>Because it’s markdown, equations are also easy to include as inline, eg <span class="math inline">\(E = mc^2\)</span> or seperated:</p>
-<p><span class="math display">\[ E = mc^2 \]</span></p>
-<p>Like that one.</p>
+<section id="cons-of-lasso" class="slide level2">
+<h2>Cons of Lasso</h2>
+<ul>
+<li class="fragment"><span class="red">Introduces bias</span>. You can’t interpret the coefficients like you would in OLS.</li>
+<li class="fragment">Very sensitive to the choice of <span class="math inline">\(\lambda\)</span>.</li>
+<li class="fragment">If predictors are highly correlated, Lasso might arbitrarily select one and ignore the others</li>
+<li class="fragment">Unlike OLS, it doesn’t provide confidence intervals or p-values. Although work-arounds exist.</li>
+</ul>
 </section>
-<section id="now-im-green" class="title-slide slide level1 section-slide green-bg center">
-<h1>Now I’m green</h1>
-<p>Section titles can change colour by section…</p>
+<section id="regularised-regression-1" class="title-slide slide level1 section-slide red-bg center">
+<h1>Regularised regression</h1>
+<p>Ridge and Elastic Net</p>
 </section>
 
-<section id="miles-per-gallon-vs-horsepower" class="slide level2">
-<h2>Miles per Gallon vs Horsepower</h2>
-<p>Code chunks can incude plots.</p>
+<section id="ridge-regression" class="slide level2">
+<h2>Ridge Regression</h2>
+<p>Ridge regression is in the same family as Lasso, but uses a different penalty term: <span class="math display">\[\min_{\beta} RSS + \lambda \sum_{j=1}^{p} \beta_j^2\]</span></p>
+<p>Because this minimises the sum of squared <span class="math inline">\(\beta\)</span>’s, Ridge shrinks coefficients but almost never to zero. The effect of the square is to strongly penalise large coefficients.</p>
+<p>While Lasso says <span class="red">“pick a few strong predictors and drop the rest”</span>, Ridge says <span class="green">“keep all predictors, but don’t rely on any single one too heavily”</span>.</p>
+</section>
+<section id="elastic-net" class="slide level2">
+<h2>Elastic Net</h2>
+<p>Elastic Net is a hybrid of Lasso and Ridge, combining both penalty terms:</p>
+<p><span class="math display">\[\min_{\beta} RSS + \lambda_1 \sum_{j=1}^{p} |\beta_j| + \lambda_2 \sum_{j=1}^{p} \beta_j^2\]</span></p>
+<p>When <span class="math inline">\(\alpha\)</span> is zero, this is pure Ridge. When <span class="math inline">\(\alpha\)</span> is one, it’s pure Lasso. In between, it’s a mix of both.</p>
+<p>Drop the variables that don’t add enough to justify their conclusion <strong>and</strong> of those that remain, don’t rely too strongly on any single one.</p>
 
-
-<img data-src="src_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
@@ -397,82 +464,6 @@ Justin Beresford
         ]
       });
     </script>
-    
-
-    <script>
-
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-
-      // slide changes (different for each slide format).
-
-      (function () {
-
-        // dispatch for htmlwidgets
-
-        function fireSlideEnter() {
-
-          const event = window.document.createEvent("Event");
-
-          event.initEvent("slideenter", true, true);
-
-          window.document.dispatchEvent(event);
-
-        }
-
-    
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          fireSlideEnter();
-
-    
-
-          // dispatch for shiny
-
-          if (window.jQuery) {
-
-            if (previousSlide) {
-
-              window.jQuery(previousSlide).trigger("hidden");
-
-            }
-
-            if (currentSlide) {
-
-              window.jQuery(currentSlide).trigger("shown");
-
-            }
-
-          }
-
-        }
-
-    
-
-        // hookup for slidy
-
-        if (window.w3c_slidy) {
-
-          window.w3c_slidy.add_observer(function (slide_num) {
-
-            // slide_num starts at position 1
-
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-
-          });
-
-        }
-
-    
-
-      })();
-
-    </script>
-
-    
-
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")

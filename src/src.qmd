@@ -1,5 +1,5 @@
 ---
-title: "Quarto Showcase"
+title: "Lasso Regression"
 author: "Justin Beresford"
 format: 
   revealjs:
@@ -10,69 +10,138 @@ format:
 
 ---
 
-## Quarto
+## Bias vs Variance
 
-Quarto enables you to weave together content and code into a finished document. To learn more about Quarto see <https://quarto.org>.
+In an ML context, we talk about a trade-off between bias and variance.
 
-## Slidecrafting book
-The contents from this slide deck are written in markdown. The tips and tricks almost all come from <https://slidecrafting-book.com>
+**1. Variance**
 
+Say you pick 100 poeple and estimate a $\hat{\beta}$, then pick another 100 people and estimate the same $\hat{\beta}$. Do that 100 times. How much do all those estimates vary?
+
+**2. Bias**
+
+Bias is the same as the econometrics definition: is the mean of those 100 $\hat{\beta}$'s equal to the "true" $\beta$ in the full population. 
+
+## Bias vs Variance
+
+Economists are typically interested in unbiasedness, because they care about 'elasticities'. *"The effect of a unit increase in $X$ on $Y$ is $\beta$%"*.
+
+::: {.fragment}
+Machine Learning Engineers are typically interested in predicting things out-of-sample. They typically care more about low variance (i.e. stable estimates) than low bias.
+:::
+
+::: {.fragment}
+Regularised regression is a way to [reduce variance]{.green}, but it comes at the cost of [increased bias]{.red}.
+
+  => Lasso is one type of regularised regression
+:::
 
 ::: {.section-slide .red-bg}
-# Section Title
-A strong section divider slide
+# Regularised regression
+Lasso
 :::
 
-## Regular content again
+## Lasso Regression (intuition)
 
-Clean, off-white background and dark text.
+Occam's Razor: "Among competing models that explain the data equally well, prefer the simplest." 
 
-+ First key message
-+ Second key message with a bit more text
-    + Nested detail one
-    + Nested detail two
-+ Third key message
+If you have many (hundreds?) of predictors, use a model that only takes on a subset of them.
 
-## Another slide
+::: {.fragment}
+In sample, adding more predictors always improves fit (R² can only go up as you add $X$'s). But when predicting out-of-sample, those extra predictors might have made things worse (the "overfitting" problem).
+:::
 
-[Inline]{.red} accents work [very easily]{.green} with text styling from a `.scss` file.
+::: {.fragment}
+Lasso regression asks: does adding this predictor improve the model [by enough to justify its inclusion?]{.red}
+:::
 
-Because it's markdown, equations are also easy to include as inline, eg $E = mc^2$ or seperated:
+## Recap on OLS
 
-$$ E = mc^2 $$
+#### The OLS objective function
 
-Like that one. 
+Standard OLS finds the $\beta$'s that minimise the sum of squared residuals:
+$$\min_{\beta} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
+$$\min_{\beta} \sum_{i=1}^{n} (y_i - X_i \beta)^2$$
+
+::: {.fragment}
+Call this difference between $y_i$ and $\hat{y}_i$ the residual sum of squares $RSS$.
+
+$$ RSS = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+:::
+
+
+## Lasso 
+
+#### The Lasso objective function
+
+Lasso adds a penalty term to the OLS objective function:
+
+$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_\j|$$
+
+
+::: {.fragment}
+This is saying: find the $\beta$'s that [(i)]{.red} minimise the RSS, but also [(ii)]{.red} keep the sum of the absolute values of the $\beta$'s small.
+:::
+
+## Lasso 
+
+#### The Lasso objective function
+
+Lasso adds a penalty term to the OLS objective function:
+
+$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} |\beta_j|$$
+
+$\lambda$  is the penalty parameter. There's a trade-off between $RSS$ and keeping the $\beta$  small. How much do we care about one vs the other? 
+
+::: {.fragment}
+NB: when $\lambda = 0$, this is just OLS. When it's $\infty$, all the $\beta$'s are zero.
+:::
+
+## Lasso for variable selection
+
+Because we're minising the pure sum of $\beta$'s (as opposed to $\beta^2\$ or some other function), Lasso tends to set some $\beta$'s exactly to zero. 
+
+This gives Lasso a [variable selection]{.green} property: it will only include predictors that improve the model enough to justify their inclusion.
 
 ::: {.section-slide .green-bg}
-# Now I'm green
-Section titles can change colour by section...
+# Pros and Cons of Lasso
 :::
 
-## Miles per Gallon vs Horsepower
+## Pros of Lasso
 
-Code chunks can incude plots. 
+- Improves out-of-sample prediction accuracy (by reducing variance and preventing overfitting).
+- Performs variable selection (i.e. sets some $\beta$'s to zero). Tells you which predictors are most important.
+- Great for high-dimensional data. Can even when you have more predictors than observations ($p > n$)
+- Can handle multi-collinearity (unlike OLS)
 
-```{r}
+## Cons of Lasso
 
-library(ggplot2)
+- [Introduces bias]{.red}. You can't interpret the coefficients like you would in OLS. 
+- Very sensitive to the choice of $\lambda$.
+- If predictors are highly correlated, Lasso might arbitrarily select one and ignore the others
+- Unlike OLS, it doesn't provide confidence intervals or p-values. Although work-arounds exist. 
 
-ggplot(mtcars, aes(x = hp, y = mpg)) +
-  geom_point(color = "#e83f35", size = 3, alpha = 0.8) +        # brand red
-  geom_smooth(method = "loess", se = FALSE, color = "#003d4c",  # alt green/teal
-              linewidth = 1.2, span = 0.9) +
-  labs(
-    title = "Fuel efficiency declines with horsepower",
-    subtitle = "mtcars (n = 32)",
-    x = "Horsepower",
-    y = "Miles per gallon"
-  ) +
-  theme_minimal(base_family = "Roboto") +
-  theme(
-    plot.background = element_rect(fill = "#fefefe", color = NA),  # off-white
-    panel.grid.minor = element_blank(),
-    axis.title = element_text(color = "#2f2f2f"),
-    axis.text = element_text(color = "#2f2f2f"),
-    plot.title = element_text(face = "bold", color = "#2f2f2f"),
-    plot.subtitle = element_text(color = "#2f2f2f")
-  )
-```
+::: {.section-slide .red-bg}
+# Regularised regression
+Ridge and Elastic Net
+:::
+
+## Ridge Regression
+
+Ridge regression is in the same family as Lasso, but uses a different penalty term:
+$$\min_{\beta} RSS + \lambda \sum_{j=1}^{p} \beta_j^2$$
+
+Because this minimises the sum of squared $\beta$'s, Ridge shrinks coefficients but almost never to zero. The effect of the square is to strongly penalise large coefficients.
+
+While Lasso says ["pick a few strong predictors and drop the rest"]{.red}, Ridge says ["keep all predictors, but don't rely on any single one too heavily"]{.green}.
+
+## Elastic Net
+
+Elastic Net is a hybrid of Lasso and Ridge, combining both penalty terms:
+
+$$\min_{\beta} RSS + \lambda_1 \sum_{j=1}^{p} |\beta_j| + \lambda_2 \sum_{j=1}^{p} \beta_j^2$$
+
+When $\alpha$ is zero, this is pure Ridge. When $\alpha$ is one, it's pure Lasso. In between, it's a mix of both.
+
+Drop the variables that don't add enough to justify their conclusion **and** of those that remain, don't rely too strongly on any single one. 
